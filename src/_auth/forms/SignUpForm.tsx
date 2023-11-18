@@ -13,14 +13,23 @@ import { Input } from "@/components/ui/input";
 import { SignUpValidationForm } from "@/lib/validation";
 import { z } from "zod";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
-import { createUserAccount } from "@/lib/appwrite/api";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 const SignUpForm = () => {
 	const {toast} = useToast();
-	const isLoading = false;
-	// 1. Define your form.
+	const {checkAuthUser, isLoading:isUserLoading} = useUserContext();
+	const navigate = useNavigate();
+
+	// Defining a mutation for creating a new user account.
+	const {mutateAsync: createUserAccount, isPending: isCreatingUser} = useCreateUserAccount();
+
+	// Defining a mutation for signing in a user account.
+	const {mutateAsync: signInAccount, isPending: isSigningInUser} = useSignInAccount();
+
+	// Defining Sign up Form.
 	const form = useForm<z.infer<typeof SignUpValidationForm>>({
 		resolver: zodResolver(SignUpValidationForm),
 		defaultValues: {
@@ -31,7 +40,7 @@ const SignUpForm = () => {
 		},
 	});
 
-	// 2. Define a submit handler.
+	// Defining a submit handler for sign up form
 	async function onSubmit(values: z.infer<typeof SignUpValidationForm>) {
 		// Do something with the form values.
 		// ✅ This will be type-safe and validated.
@@ -43,8 +52,29 @@ const SignUpForm = () => {
 			});
 		}
 
-		// const session = await signInAccount()
+		const session = await signInAccount({
+			email: values.email,
+			password: values.password
+		})
+
+		if(!session) {
+			return toast({
+				title: "Sign in failed. Please Try again.",
+			});
+		}
+
+		const isLoggedIn = await checkAuthUser();
+
+		if(isLoggedIn) {
+			form.reset();
+			navigate('/');
+		} else {
+			toast({ title: "Sign up failed. Please Try again." });
+		}
+
+
 	}
+
 	return (
 		<Form {...form}>
 			<div className="sm:w-420 flex-center flex-col">
@@ -129,7 +159,7 @@ const SignUpForm = () => {
 						)}
 					/>
 					<Button type="submit" className="shad-button_primary">
-						{isLoading ? (
+						{isCreatingUser ? (
 							<div className="flex-center gap-2">
 								<Loader /> Loading...
 							</div>
