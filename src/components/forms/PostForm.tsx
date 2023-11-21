@@ -16,9 +16,18 @@ import { Textarea } from "../ui/textarea";
 import FileUploader from "../shared/FileUploader";
 import { CreatePostValidationForm } from "@/lib/validation";
 import { IPostFormProps } from "@/types";
+import { useMutation } from "@tanstack/react-query";
+import { useUserContext } from "@/context/AuthContext";
+import { useToast } from "../ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useCreatePost } from "@/lib/react-query/queriesAndMutations";
 
 export default function PostForm({ post }: IPostFormProps) {
-	// 1. Define your form.
+	const { mutateAsync: createPost, isPending: isLoadingCreate } =
+		useCreatePost();
+	const { user } = useUserContext();
+	const { toast } = useToast();
+	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof CreatePostValidationForm>>({
 		resolver: zodResolver(CreatePostValidationForm),
 		defaultValues: {
@@ -29,11 +38,19 @@ export default function PostForm({ post }: IPostFormProps) {
 		},
 	});
 
-	// 2. Define a submit handler.
-	function onSubmit(values: z.infer<typeof CreatePostValidationForm>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values);
+	async function onSubmit(values: z.infer<typeof CreatePostValidationForm>) {
+		const newPost = await createPost({
+			...values,
+			userId: user.id,
+		});
+
+		if (!newPost) {
+			toast({
+				title: "Please try again",
+			});
+		}
+
+		navigate("/");
 	}
 	return (
 		<Form {...form}>
