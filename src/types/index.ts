@@ -67,3 +67,7 @@ export type IFileUploaderProps = {
     fieldChange: (FILES: File[]) => void;
     mediaUrl: string;
 };
+
+export type IPostCardProps = {
+    post: Models.Document;
+}
