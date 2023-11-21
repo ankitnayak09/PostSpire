@@ -1,3 +1,4 @@
+import { formatDate } from "@/lib/utils";
 import { IPostCardProps } from "@/types";
 import { Link } from "react-router-dom";
 
@@ -21,7 +22,7 @@ export default function PostCard({ post }: IPostCardProps) {
 							{post.creator.name}
 						</p>
 						<div className="flex-center gap-2 text-light-3">
-							<p>{post.$createdAt}</p> -{" "}
+							<p>{formatDate(post.$createdAt)}</p> -{" "}
 							<p className="subtle-semibold lg:small-regular">
 								{post.location}
 							</p>
