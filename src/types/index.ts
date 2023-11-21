@@ -1,3 +1,5 @@
+import { Models } from "appwrite";
+
 export type IContextType = {
     user: IUser;
     isLoading: boolean;
@@ -55,4 +57,13 @@ export type INewUser = {
     email: string;
     username: string;
     password: string;
+};
+
+export type IPostFormProps = {
+    post?: Models.Document
+};
+
+export type IFileUploaderProps = {
+    fieldChange: (FILES: File[]) => void;
+    mediaUrl: string;
 };
