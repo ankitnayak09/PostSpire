@@ -43,7 +43,7 @@ export default function Topbar() {
 						<img
 							src={
 								user.imageUrl ||
-								"/assets/images/profile-placeholder.svg"
+								"/assets/icons/profile-placeholder.svg"
 							}
 							alt="profile"
 							className="h-8 w-8 rounded-full"
