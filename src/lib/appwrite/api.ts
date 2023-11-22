@@ -222,3 +222,16 @@ export async function savePost(postId: string, userId: string) {
         return error
     }
 }
+
+export async function deleteSavedPost(savedRecordId: string) {
+    try {
+        const statusCode = await databases.deleteDocument(appwriteConfig.databaseId, appwriteConfig.saveCollectionId, savedRecordId)
+
+        if (!statusCode) throw Error;
+
+        return { status: 'ok' };
+    } catch (error) {
+        console.log(error)
+        return error
+    }
+}
