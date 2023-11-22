@@ -16,15 +16,20 @@ import { Textarea } from "../ui/textarea";
 import FileUploader from "../shared/FileUploader";
 import { CreatePostValidationForm } from "@/lib/validation";
 import { IPostFormProps } from "@/types";
-import { useMutation } from "@tanstack/react-query";
 import { useUserContext } from "@/context/AuthContext";
 import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { useCreatePost } from "@/lib/react-query/queriesAndMutations";
+import {
+	useCreatePost,
+	useUpdatePost,
+} from "@/lib/react-query/queriesAndMutations";
+import Loader from "../shared/Loader";
 
-export default function PostForm({ post }: IPostFormProps) {
+export default function PostForm({ post, action }: IPostFormProps) {
 	const { mutateAsync: createPost, isPending: isLoadingCreate } =
 		useCreatePost();
+	const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+		useUpdatePost();
 	const { user } = useUserContext();
 	const { toast } = useToast();
 	const navigate = useNavigate();
@@ -39,18 +44,34 @@ export default function PostForm({ post }: IPostFormProps) {
 	});
 
 	async function onSubmit(values: z.infer<typeof CreatePostValidationForm>) {
-		const newPost = await createPost({
-			...values,
-			userId: user.id,
-		});
-
-		if (!newPost) {
-			toast({
-				title: "Please try again",
+		if (post && action === "Update") {
+			const updatedPost = await updatePost({
+				...values,
+				postId: post?.$id,
+				imageId: post?.imageId,
+				imageUrl: post?.imageUrl,
 			});
-		}
 
-		navigate("/");
+			if (!updatedPost) {
+				toast({
+					title: "Please try again",
+				});
+			}
+			navigate(`/post/${post?.$id}`);
+		} else {
+			const newPost = await createPost({
+				...values,
+				userId: user.id,
+			});
+
+			if (!newPost) {
+				toast({
+					title: "Please try again",
+				});
+			}
+
+			navigate("/");
+		}
 	}
 	return (
 		<Form {...form}>
@@ -140,8 +161,13 @@ export default function PostForm({ post }: IPostFormProps) {
 					<Button
 						type="submit"
 						className="shad-button_primary whitespace-nowrap"
+						disabled={isLoadingCreate || isLoadingUpdate}
 					>
-						Submit
+						{isLoadingCreate || isLoadingUpdate ? (
+							<Loader />
+						) : (
+							action + " Post"
+						)}{" "}
 					</Button>
 				</div>
 			</form>

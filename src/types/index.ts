@@ -60,7 +60,8 @@ export type INewUser = {
 };
 
 export type IPostFormProps = {
-    post?: Models.Document
+    post?: Models.Document,
+    action: 'Create' | 'Update'
 };
 
 export type IFileUploaderProps = {
