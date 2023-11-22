@@ -71,3 +71,8 @@ export type IFileUploaderProps = {
 export type IPostCardProps = {
     post: Models.Document;
 }
+
+export type IPostStatsProps = {
+    post: Models.Document;
+    userId: string;
+}
