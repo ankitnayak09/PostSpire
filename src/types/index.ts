@@ -74,6 +74,6 @@ export type IPostCardProps = {
 }
 
 export type IPostStatsProps = {
-    post: Models.Document;
+    post?: Models.Document;
     userId: string;
 }

@@ -73,6 +73,10 @@ export default function PostForm({ post, action }: IPostFormProps) {
 			navigate("/");
 		}
 	}
+	function goBack() {
+		navigate(-1);
+	}
+
 	return (
 		<Form {...form}>
 			<form
@@ -155,7 +159,11 @@ export default function PostForm({ post, action }: IPostFormProps) {
 					)}
 				/>
 				<div className="flex gap-4 items-center justify-end">
-					<Button type="button" className="shad-button_dark_4">
+					<Button
+						type="button"
+						className="shad-button_dark_4"
+						onClick={goBack}
+					>
 						Cancel
 					</Button>
 					<Button
