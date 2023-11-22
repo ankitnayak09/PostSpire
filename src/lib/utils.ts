@@ -25,3 +25,7 @@ export function formatDate(dateString: string): string {
     return `${days} day${days > 1 ? "s" : ""} ago`
   }
 }
+
+export const checkIsLiked = (likeList: string[], userId: string) => {
+  return likeList.includes(userId);
+};
