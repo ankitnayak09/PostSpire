@@ -82,3 +82,8 @@ export type IGridPostListProps = {
 	showUser?: boolean;
 	showStats?: boolean;
 };
+
+export type ISearchResultsProps = {
+	isSearchFetching: boolean;
+	searchedPosts: Models.Document[];
+};
